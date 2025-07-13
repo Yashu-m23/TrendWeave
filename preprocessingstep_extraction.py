@@ -15,7 +15,7 @@ from scenedetect.detectors import ContentDetector
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 # Folders: update these paths as needed
-pdf_folder = r"path-to-your-dataset"
+pdf_folder = r"path\to\your\dataset"
 image_folder = r""  # Leave blank or set to "" if not available yet
 video_folder = r""  # Leave blank or set to "" if not available yet
 output_folder = "extracted_data"
