@@ -15,13 +15,13 @@ from scenedetect.detectors import ContentDetector
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 # Folders: update these paths as needed
-pdf_folder = r"path\to\your\dataset"
+pdf_folder = r"C:\Users\yasha\Downloads\wgsn_pdfs\wgsn_dataset"
 image_folder = r""  # Leave blank or set to "" if not available yet
 video_folder = r""  # Leave blank or set to "" if not available yet
 output_folder = "extracted_data"
 os.makedirs(output_folder, exist_ok=True)
 
-# --- PDF Extraction (images in page folders + single OCR text file + all image metadata in one JSON) ---
+# --- PDF Extraction (images in single PDF folder + single OCR text file + all image metadata in one JSON) ---
 if os.path.isdir(pdf_folder):
     pdf_files = [f for f in os.listdir(pdf_folder) if f.lower().endswith(".pdf")]
     for pdf_file in tqdm(pdf_files, desc="PDFs processed"):
@@ -31,19 +31,18 @@ if os.path.isdir(pdf_folder):
             pdf_output_dir = os.path.join(output_folder, pdf_name)
             os.makedirs(pdf_output_dir, exist_ok=True)
 
-            # 1. Extract images from PDF, saving each page's images in its own folder
+            # 1. Extract images from PDF, saving all images in the PDF's output folder
             doc = fitz.open(pdf_path)
             image_metadata_list = []
             for page_num in range(len(doc)):
-                page_folder = os.path.join(pdf_output_dir, f"page_{page_num+1}")
-                os.makedirs(page_folder, exist_ok=True)
                 images = doc.load_page(page_num).get_images(full=True)
                 for img_index, img in enumerate(images):
                     xref = img[0]
                     base_image = doc.extract_image(xref)
                     image_bytes = base_image["image"]
                     image_ext = base_image["ext"]
-                    image_filename = os.path.join(page_folder, f"img_{img_index+1}.{image_ext}")
+                    # Save all images in the PDF's output folder, use page and image index in filename
+                    image_filename = os.path.join(pdf_output_dir, f"page{page_num+1}_img{img_index+1}.{image_ext}")
                     # Only extract if not already present
                     if not os.path.exists(image_filename):
                         with open(image_filename, "wb") as img_file:
@@ -75,12 +74,8 @@ if os.path.isdir(pdf_folder):
                 page_images = convert_from_path(pdf_path)
                 all_text = ""
                 for page_num, image in enumerate(page_images):
-                    page_folder = os.path.join(pdf_output_dir, f"page_{page_num+1}")
-                    os.makedirs(page_folder, exist_ok=True)
-                    page_img_path = os.path.join(page_folder, "ocr.jpg")
-                    if not os.path.exists(page_img_path):
-                        image.save(page_img_path, "JPEG")
-                    text = pytesseract.image_to_string(Image.open(page_img_path))
+                    # Directly process OCR in memory, do not save the image
+                    text = pytesseract.image_to_string(image)
                     text = text.replace("-\n", "")
                     all_text += f"\n\n--- Page {page_num+1} ---\n\n{text}"
                 with open(text_file, "w", encoding="utf-8") as f:
