@@ -22,7 +22,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 # Directory containing (possibly nested) images to process
-IMAGE_DIR = r"path\to\pdf"
+IMAGE_DIR = r"path\to\preprocessingoutputfolder"
 
 
 # Directory to save output JSON files
