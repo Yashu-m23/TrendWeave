@@ -22,7 +22,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 # Directory containing (possibly nested) images to process
-IMAGE_DIR = r"C:\Users\yasha\TrendWeave\extracted_data\___Collection_Review__Men_s_Key_Trims___Details_A_W_24_25_en"
+IMAGE_DIR = r"path\to\pdf"
 
 
 # Directory to save output JSON files
